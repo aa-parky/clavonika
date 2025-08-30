@@ -1,7 +1,7 @@
 /**
  * Clavonika - Piano Keyboard Interface
  * Bundled version - Single file deployment
- * 
+ *
  * Usage:
  *   <script src="bundled-clavonika.js"></script>
  *   <script>
@@ -408,7 +408,7 @@
             const label = document.createElement("span");
             label.className = "key-label";
             const labelOctave = key.octave + middleCShift;
-            label.textContent = key.note.replace(/\\d+$/, labelOctave);
+            label.textContent = key.note.replace(/\d+$/, labelOctave);
             keyElement.appendChild(label);
 
             return keyElement;
@@ -540,7 +540,7 @@
         create: function(parentElement) {
             const container = document.createElement('div');
             container.id = 'clavonika-' + Date.now();
-            
+
             if (typeof parentElement === 'string') {
                 const parent = document.getElementById(parentElement);
                 if (!parent) {
