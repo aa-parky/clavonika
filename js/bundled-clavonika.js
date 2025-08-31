@@ -274,96 +274,22 @@
 `;
 
     // Piano keys data
-    const keys = [
-        { note: "A0", type: "white", octave: 0, midi: 21 },
-        { note: "A#0", type: "black", octave: 0, midi: 22 },
-        { note: "B0", type: "white", octave: 0, midi: 23 },
-        { note: "C1", type: "white", octave: 1, midi: 24 },
-        { note: "C#1", type: "black", octave: 1, midi: 25 },
-        { note: "D1", type: "white", octave: 1, midi: 26 },
-        { note: "D#1", type: "black", octave: 1, midi: 27 },
-        { note: "E1", type: "white", octave: 1, midi: 28 },
-        { note: "F1", type: "white", octave: 1, midi: 29 },
-        { note: "F#1", type: "black", octave: 1, midi: 30 },
-        { note: "G1", type: "white", octave: 1, midi: 31 },
-        { note: "G#1", type: "black", octave: 1, midi: 32 },
-        { note: "A1", type: "white", octave: 1, midi: 33 },
-        { note: "A#1", type: "black", octave: 1, midi: 34 },
-        { note: "B1", type: "white", octave: 1, midi: 35 },
-        { note: "C2", type: "white", octave: 2, midi: 36 },
-        { note: "C#2", type: "black", octave: 2, midi: 37 },
-        { note: "D2", type: "white", octave: 2, midi: 38 },
-        { note: "D#2", type: "black", octave: 2, midi: 39 },
-        { note: "E2", type: "white", octave: 2, midi: 40 },
-        { note: "F2", type: "white", octave: 2, midi: 41 },
-        { note: "F#2", type: "black", octave: 2, midi: 42 },
-        { note: "G2", type: "white", octave: 2, midi: 43 },
-        { note: "G#2", type: "black", octave: 2, midi: 44 },
-        { note: "A2", type: "white", octave: 2, midi: 45 },
-        { note: "A#2", type: "black", octave: 2, midi: 46 },
-        { note: "B2", type: "white", octave: 2, midi: 47 },
-        { note: "C3", type: "white", octave: 3, midi: 48 },
-        { note: "C#3", type: "black", octave: 3, midi: 49 },
-        { note: "D3", type: "white", octave: 3, midi: 50 },
-        { note: "D#3", type: "black", octave: 3, midi: 51 },
-        { note: "E3", type: "white", octave: 3, midi: 52 },
-        { note: "F3", type: "white", octave: 3, midi: 53 },
-        { note: "F#3", type: "black", octave: 3, midi: 54 },
-        { note: "G3", type: "white", octave: 3, midi: 55 },
-        { note: "G#3", type: "black", octave: 3, midi: 56 },
-        { note: "A3", type: "white", octave: 3, midi: 57 },
-        { note: "A#3", type: "black", octave: 3, midi: 58 },
-        { note: "B3", type: "white", octave: 3, midi: 59 },
-        { note: "C4", type: "white", octave: 4, midi: 60 },
-        { note: "C#4", type: "black", octave: 4, midi: 61 },
-        { note: "D4", type: "white", octave: 4, midi: 62 },
-        { note: "D#4", type: "black", octave: 4, midi: 63 },
-        { note: "E4", type: "white", octave: 4, midi: 64 },
-        { note: "F4", type: "white", octave: 4, midi: 65 },
-        { note: "F#4", type: "black", octave: 4, midi: 66 },
-        { note: "G4", type: "white", octave: 4, midi: 67 },
-        { note: "G#4", type: "black", octave: 4, midi: 68 },
-        { note: "A4", type: "white", octave: 4, midi: 69 },
-        { note: "A#4", type: "black", octave: 4, midi: 70 },
-        { note: "B4", type: "white", octave: 4, midi: 71 },
-        { note: "C5", type: "white", octave: 5, midi: 72 },
-        { note: "C#5", type: "black", octave: 5, midi: 73 },
-        { note: "D5", type: "white", octave: 5, midi: 74 },
-        { note: "D#5", type: "black", octave: 5, midi: 75 },
-        { note: "E5", type: "white", octave: 5, midi: 76 },
-        { note: "F5", type: "white", octave: 5, midi: 77 },
-        { note: "F#5", type: "black", octave: 5, midi: 78 },
-        { note: "G5", type: "white", octave: 5, midi: 79 },
-        { note: "G#5", type: "black", octave: 5, midi: 80 },
-        { note: "A5", type: "white", octave: 5, midi: 81 },
-        { note: "A#5", type: "black", octave: 5, midi: 82 },
-        { note: "B5", type: "white", octave: 5, midi: 83 },
-        { note: "C6", type: "white", octave: 6, midi: 84 },
-        { note: "C#6", type: "black", octave: 6, midi: 85 },
-        { note: "D6", type: "white", octave: 6, midi: 86 },
-        { note: "D#6", type: "black", octave: 6, midi: 87 },
-        { note: "E6", type: "white", octave: 6, midi: 88 },
-        { note: "F6", type: "white", octave: 6, midi: 89 },
-        { note: "F#6", type: "black", octave: 6, midi: 90 },
-        { note: "G6", type: "white", octave: 6, midi: 91 },
-        { note: "G#6", type: "black", octave: 6, midi: 92 },
-        { note: "A6", type: "white", octave: 6, midi: 93 },
-        { note: "A#6", type: "black", octave: 6, midi: 94 },
-        { note: "B6", type: "white", octave: 6, midi: 95 },
-        { note: "C7", type: "white", octave: 7, midi: 96 },
-        { note: "C#7", type: "black", octave: 7, midi: 97 },
-        { note: "D7", type: "white", octave: 7, midi: 98 },
-        { note: "D#7", type: "black", octave: 7, midi: 99 },
-        { note: "E7", type: "white", octave: 7, midi: 100 },
-        { note: "F7", type: "white", octave: 7, midi: 101 },
-        { note: "F#7", type: "black", octave: 7, midi: 102 },
-        { note: "G7", type: "white", octave: 7, midi: 103 },
-        { note: "G#7", type: "black", octave: 7, midi: 104 },
-        { note: "A7", type: "white", octave: 7, midi: 105 },
-        { note: "A#7", type: "black", octave: 7, midi: 106 },
-        { note: "B7", type: "white", octave: 7, midi: 107 },
-        { note: "C8", type: "white", octave: 8, midi: 108 },
-    ];
+    function generateKeys() {
+        const NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+        const out = [];
+        for (let midi = 21; midi <= 108; midi++) {
+            const name = NAMES[midi % 12];
+            const octave = Math.floor(midi / 12) - 1;
+            out.push({
+                note: name + octave,
+                type: name.includes("#") ? "black" : "white",
+                octave,
+                midi
+            });
+        }
+        return out;
+    }
+    const keys = generateKeys();
 
     // Core functionality
     function createClavonikaInstance(container) {
@@ -411,6 +337,25 @@
         }
 
         function initializeEventHandlers() {
+            function setLabelMode(mode) {
+                if (mode === 'c-only') {
+                    keyboard.classList.add('show-c-only');
+                    keyboard.classList.remove('hide-all-labels');
+                    toggleCOnly.checked = true;
+                    toggleAllLabels.checked = false;
+                } else if (mode === 'hide-all') {
+                    keyboard.classList.add('hide-all-labels');
+                    keyboard.classList.remove('show-c-only');
+                    toggleCOnly.checked = false;
+                    toggleAllLabels.checked = true;
+                } else {
+                    keyboard.classList.remove('show-c-only');
+                    keyboard.classList.remove('hide-all-labels');
+                    toggleCOnly.checked = false;
+                    toggleAllLabels.checked = false;
+                }
+            }
+
             middleCSelect.addEventListener("change", (e) => {
                 const mode = e.target.value;
                 middleCShift = mode === "C3" ? -1 : mode === "C4" ? 0 : 1;
@@ -418,24 +363,15 @@
             });
 
             toggleCOnly.addEventListener("change", () => {
-                if (toggleCOnly.checked) {
-                    keyboard.classList.add("show-c-only");
-                    toggleAllLabels.checked = false;
-                    keyboard.classList.remove("hide-all-labels");
-                } else {
-                    keyboard.classList.remove("show-c-only");
-                }
+                setLabelMode(toggleCOnly.checked ? 'c-only' : (toggleAllLabels.checked ? 'hide-all' : 'normal'));
             });
 
             toggleAllLabels.addEventListener("change", () => {
-                if (toggleAllLabels.checked) {
-                    keyboard.classList.add("hide-all-labels");
-                    toggleCOnly.checked = false;
-                    keyboard.classList.remove("show-c-only");
-                } else {
-                    keyboard.classList.remove("hide-all-labels");
-                }
+                setLabelMode(toggleAllLabels.checked ? 'hide-all' : (toggleCOnly.checked ? 'c-only' : 'normal'));
             });
+
+            // Ensure the UI reflects current checkbox states on init
+            setLabelMode(toggleCOnly.checked ? 'c-only' : (toggleAllLabels.checked ? 'hide-all' : 'normal'));
         }
 
         function initialize() {
@@ -450,15 +386,18 @@
             initializeEventHandlers();
         }
 
+        function setNoteActive(midiNote, isActive) {
+            const el = container.querySelector(`[data-midi="${midiNote}"]`);
+            if (el) el.classList.toggle("active", isActive);
+        }
+
         // Public API
         return {
             noteOn: function(midiNote) {
-                const el = container.querySelector(`[data-midi="${midiNote}"]`);
-                if (el) el.classList.add("active");
+                setNoteActive(midiNote, true);
             },
             noteOff: function(midiNote) {
-                const el = container.querySelector(`[data-midi="${midiNote}"]`);
-                if (el) el.classList.remove("active");
+                setNoteActive(midiNote, false);
             },
             initialize: initialize
         };
@@ -512,10 +451,10 @@
 
     // Backward compatibility - expose PianoInterface globally
     window.PianoInterface = {
-        noteOn: function(midiNote) {
+        noteOn: function(_midiNote) {
             console.warn('PianoInterface is deprecated. Use Clavonika.init() to create an instance.');
         },
-        noteOff: function(midiNote) {
+        noteOff: function(_midiNote) {
             console.warn('PianoInterface is deprecated. Use Clavonika.init() to create an instance.');
         }
     };
