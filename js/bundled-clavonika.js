@@ -296,27 +296,28 @@
         let middleCShift = -1; // MIDI 60 = C3
         let keyboard, toggleCOnly, toggleAllLabels, middleCSelect;
 
-        function createKeyElement(key, type) {
-            const keyElement = document.createElement("div");
-            keyElement.className = type === "black" ? "black-key" : "white-key";
-            keyElement.setAttribute("data-note", key.note);
-            keyElement.setAttribute("data-octave", key.octave);
-            keyElement.setAttribute("data-midi", key.midi);
+        function createKeyElement(key) {
+            const el = document.createElement("div");
+            el.className = key.type === "black" ? "black-key" : "white-key";
+            el.dataset.note = key.note;
+            el.dataset.octave = String(key.octave);
+            el.dataset.midi = String(key.midi);
 
-            if (key.midi === 60) keyElement.classList.add("middle-c");
+            if (key.midi === 60) {
+                el.classList.add("middle-c");
+            }
 
             const label = document.createElement("span");
             label.className = "key-label";
-            const labelOctave = key.octave + middleCShift;
-            label.textContent = key.note.replace(/\d+$/, labelOctave);
-            keyElement.appendChild(label);
+            label.textContent = key.note.replace(/\d+$/, String(key.octave + middleCShift));
+            el.appendChild(label);
 
-            return keyElement;
+            return el;
         }
 
         function processKeys(keyList, isBlackKeys = false) {
             keyList.forEach((key) => {
-                const keyElement = createKeyElement(key, key.type);
+                const keyElement = createKeyElement(key);
 
                 if (isBlackKeys) {
                     const keysBefore = keys.slice(0, keys.indexOf(key));
