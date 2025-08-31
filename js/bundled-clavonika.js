@@ -338,26 +338,26 @@
             processKeys(blackKeys, true);
         }
 
-        function initializeEventHandlers() {
-            function setLabelMode(mode) {
-                if (mode === 'c-only') {
-                    keyboard.classList.add('show-c-only');
-                    keyboard.classList.remove('hide-all-labels');
-                    toggleCOnly.checked = true;
-                    toggleAllLabels.checked = false;
-                } else if (mode === 'hide-all') {
-                    keyboard.classList.add('hide-all-labels');
-                    keyboard.classList.remove('show-c-only');
-                    toggleCOnly.checked = false;
-                    toggleAllLabels.checked = true;
-                } else {
-                    keyboard.classList.remove('show-c-only');
-                    keyboard.classList.remove('hide-all-labels');
-                    toggleCOnly.checked = false;
-                    toggleAllLabels.checked = false;
-                }
+        function setLabelMode(mode) {
+            if (mode === 'c-only') {
+                keyboard.classList.add('show-c-only');
+                keyboard.classList.remove('hide-all-labels');
+                toggleCOnly.checked = true;
+                toggleAllLabels.checked = false;
+            } else if (mode === 'hide-all') {
+                keyboard.classList.add('hide-all-labels');
+                keyboard.classList.remove('show-c-only');
+                toggleCOnly.checked = false;
+                toggleAllLabels.checked = true;
+            } else {
+                keyboard.classList.remove('show-c-only');
+                keyboard.classList.remove('hide-all-labels');
+                toggleCOnly.checked = false;
+                toggleAllLabels.checked = false;
             }
+        }
 
+        function initializeEventHandlers() {
             middleCSelect.addEventListener("change", (e) => {
                 const mode = e.target.value;
                 middleCShift = mode === "C3" ? -1 : mode === "C4" ? 0 : 1;
