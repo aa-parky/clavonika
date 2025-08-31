@@ -41,7 +41,7 @@
   display: inline-block;
   padding: 15px;
   border-radius: 15px;
-  background: radial-gradient(circle at 100%, #1a1a1a 0%, #262626 100%);
+  background: #333333;
   overflow-x: auto;
 }
 
