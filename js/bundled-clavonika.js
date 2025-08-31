@@ -314,26 +314,28 @@
             return keyElement;
         }
 
+        function processKeys(keyList, isBlackKeys = false) {
+            keyList.forEach((key) => {
+                const keyElement = createKeyElement(key, key.type);
+
+                if (isBlackKeys) {
+                    const keysBefore = keys.slice(0, keys.indexOf(key));
+                    const whiteKeysBefore = keysBefore.filter((k) => k.type === "white").length;
+                    keyElement.style.left = whiteKeysBefore * 25 - -6 + "px";
+                }
+
+                keyboard.appendChild(keyElement);
+            });
+        }
+
         function generateKeyboard() {
             keyboard.innerHTML = "";
 
             const whiteKeys = keys.filter((k) => k.type === "white");
             const blackKeys = keys.filter((k) => k.type === "black");
 
-            whiteKeys.forEach((key) => {
-                const keyElement = createKeyElement(key, "white");
-                keyboard.appendChild(keyElement);
-            });
-
-            blackKeys.forEach((key) => {
-                const keysBefore = keys.slice(0, keys.indexOf(key));
-                const whiteKeysBefore = keysBefore.filter((k) => k.type === "white").length;
-
-                const keyElement = createKeyElement(key, "black");
-                keyElement.style.left = whiteKeysBefore * 25 - -6 + "px";
-
-                keyboard.appendChild(keyElement);
-            });
+            processKeys(whiteKeys, false);
+            processKeys(blackKeys, true);
         }
 
         function initializeEventHandlers() {
