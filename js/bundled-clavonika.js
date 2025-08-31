@@ -16,252 +16,226 @@
 
     // CSS Styles
     const CSS_STYLES = `
-/* === Reset + Global Styles === */
+/* === Global Reset === */
 .clavonika-container * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-.clavonika-container {
-    font-family: "Arial", sans-serif;
-    background-color: #121212;
-    color: #f0f0f0;
-    padding: 20px;
-    border-radius: 10px;
-}
-
-/* === Top-level Layout Containers === */
-.clavonika-container .piano-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-}
-
-.clavonika-container .piano-container {
-    position: relative;
-    display: inline-block;
-    background: radial-gradient(circle at 100%, #1a1a1a 0%, #262626 100%);
-    padding: 15px;
-    border-radius: 15px;
-    overflow-x: auto;
-}
-
-/* === MIDI Device Selector === */
-.clavonika-container .midi-device-label {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-weight: bold;
-    color: #ddd;
-    margin-bottom: 4px;
-}
-
-.clavonika-container #midiDeviceSelector {
-    background-color: #1e1e1e;
-    color: #e0e0e0;
-    border: 1px solid #444;
-}
-
-/* === Piano Controls Panel === */
-.clavonika-container .piano-controls {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 40px;
-    margin-bottom: 12px;
-    color: #ccc;
-    font-size: 0.9rem;
-}
-
-.clavonika-container .piano-controls label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    white-space: nowrap;
-}
-
-.clavonika-container .piano-controls select {
-    padding: 4px 6px;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    background-color: #111;
-    color: #fff;
-    border: 1px solid #555;
-    line-height: 1;
-    height: 26px;
-    margin-top: 1px;
-}
-
-.clavonika-container .middle-c-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: rgb(222, 222, 222);
-}
-
-/* === Keyboard + Keys === */
-.clavonika-container .keyboard {
-    position: relative;
-    display: flex;
-    background: linear-gradient(145deg, #000000, #1f1f1f);
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow:
-            inset 0 4px 8px rgba(0, 0, 0, 0.6),
-            inset 0 -2px 4px rgba(255, 255, 255, 0.05);
-}
-
-/* === White Keys === */
-.clavonika-container .white-key {
-    width: 24px;
-    height: 140px;
-    background: linear-gradient(180deg, #ffffff 0%, #f8f8f8 50%, #f0f0f0 100%);
-    border: 1px solid #ddd;
-    border-radius: 0 0 4px 4px;
-    margin-right: 1px;
-    position: relative;
-    cursor: pointer;
-    transition: all 0.1s ease;
-    box-shadow:
-            0 2px 4px rgba(0, 0, 0, 0.1),
-            inset 0 1px 2px rgba(255, 255, 255, 0.8),
-            inset 0 -1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.clavonika-container .white-key:hover {
-    background: linear-gradient(180deg, #f5f5f5 0%, #eeeeee 50%, #e8e8e8 100%);
-    transform: translateY(1px);
-    box-shadow:
-            0 1px 2px rgba(0, 0, 0, 0.2),
-            inset 0 1px 2px rgba(255, 255, 255, 0.6),
-            inset 0 -1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.clavonika-container .white-key:active,
-.clavonika-container .white-key.active {
-    background-color: #e06666 !important;
-    box-shadow: inset 0 0 5px #ff9999;
-}
-
-/* === Black Keys === */
-.clavonika-container .black-key {
-    width: 16px;
-    height: 90px;
-    background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 50%, #000000 100%);
-    border-radius: 0 0 3px 3px;
-    position: absolute;
-    cursor: pointer;
-    z-index: 2;
-    transition: all 0.1s ease;
-    box-shadow:
-            0 4px 8px rgba(0, 0, 0, 0.4),
-            inset 0 1px 2px rgba(255, 255, 255, 0.1),
-            inset 0 -1px 2px rgba(0, 0, 0, 0.8);
-}
-
-.clavonika-container .black-key:hover {
-    background: linear-gradient(180deg, #404040 0%, #2a2a2a 50%, #1a1a1a 100%);
-    transform: translateY(1px);
-    box-shadow:
-            0 3px 6px rgba(0, 0, 0, 0.5),
-            inset 0 1px 2px rgba(255, 255, 255, 0.15),
-            inset 0 -1px 2px rgba(0, 0, 0, 0.9);
-}
-
-.clavonika-container .black-key:active {
-    background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 50%, #000000 100%);
-    transform: translateY(2px);
-    box-shadow:
-            inset 0 2px 4px rgba(0, 0, 0, 0.8),
-            inset 0 1px 2px rgba(255, 255, 255, 0.05);
-}
-
-.clavonika-container .black-key.active {
-    background-color: #aa0000 !important;
-    box-shadow: inset 0 0 5px #ff3333;
-}
-
-/* === Key Labels === */
-.clavonika-container .key-label {
-    position: absolute;
-    bottom: 8px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 9px;
-    font-weight: 500;
-    color: #888;
-    pointer-events: none;
-    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
-}
-
-.clavonika-container .black-key .key-label {
-    color: #bbb;
-    bottom: 6px;
-    font-size: 7px;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
-}
-
-/* === Middle C and C Octave Highlighting === */
-.clavonika-container .white-key.middle-c .key-label,
-.clavonika-container .black-key.middle-c .key-label,
-.clavonika-container .white-key[data-note^="C"] .key-label {
-    color: #ff6b6b;
-    font-weight: bold;
-}
-
-/* === Label Visibility Controls === */
-.clavonika-container .keyboard.hide-all-labels .key-label {
-    display: none;
-}
-
-.clavonika-container .keyboard.show-c-only .key-label {
-    display: none;
-}
-
-.clavonika-container .keyboard.show-c-only .white-key[data-note^="C"] .key-label,
-.clavonika-container .keyboard.show-c-only .black-key[data-note^="C"] .key-label {
-    display: block;
-}
-
-/* === Hover Glow Effects === */
-.clavonika-container .white-key:hover::before,
-.clavonika-container .black-key:hover::before {
-    content: "";
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    border-radius: 0 0 6px 6px;
-    z-index: -1;
-}
-
-.clavonika-container .white-key:hover::before {
-    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-}
-
-.clavonika-container .black-key:hover::before {
-    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
-    border-radius: 0 0 5px 5px;
-}
-
-/* === Key Animation === */
-@keyframes clavonika-keyPress {
-    0%   { transform: translateY(0); }
-    50%  { transform: translateY(2px); }
-    100% { transform: translateY(0); }
-}
-
-.clavonika-container .key-pressed {
-    animation: clavonika-keyPress 0.2s ease;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 /* === Utility === */
 .clavonika-container .hidden {
-    display: none;
+  display: none;
+}
+
+/* === Layout === */
+.clavonika-container .piano-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.clavonika-container .piano-container {
+  position: relative;
+  display: inline-block;
+  padding: 15px;
+  border-radius: 15px;
+  background: radial-gradient(circle at 100%, #1a1a1a 0%, #262626 100%);
+  overflow-x: auto;
+}
+
+/* === MIDI Device Selector === */
+.clavonika-container .midi-device-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.clavonika-container #midiDeviceSelector {
+  border: 1px solid #444;
+}
+
+/* === Piano Controls === */
+.clavonika-container .piano-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+}
+
+.clavonika-container .piano-controls label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.clavonika-container .piano-controls select {
+  padding: 4px 6px;
+  height: 26px;
+  font-size: 0.9rem;
+  border: 1px solid #555;
+  border-radius: 4px;
+  line-height: 1;
+  margin-top: 1px;
+}
+
+.clavonika-container .middle-c-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* === Keyboard Base === */
+.clavonika-container .keyboard {
+  position: relative;
+  display: flex;
+  padding: 15px;
+  border-radius: 8px;
+  background: linear-gradient(145deg, #000, #1f1f1f);
+  box-shadow:
+    inset 0 4px 8px rgba(0, 0, 0, 0.6),
+    inset 0 -2px 4px rgba(255, 255, 255, 0.05);
+}
+
+/* === White Keys === */
+.clavonika-container .white-key {
+  position: relative;
+  width: 24px;
+  height: 140px;
+  margin-right: 1px;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  border-radius: 0 0 4px 4px;
+  background: linear-gradient(180deg, #fff 0%, #f8f8f8 50%, #f0f0f0 100%);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    inset 0 1px 2px rgba(255, 255, 255, 0.8),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+  transition: transform 0.1s ease;
+}
+
+.clavonika-container .white-key:hover {
+  background: linear-gradient(180deg, #f5f5f5, #eee, #e8e8e8);
+  transform: translateY(1px);
+}
+
+.clavonika-container .white-key:active,
+.clavonika-container .white-key.active {
+  background-color: #e06666 !important;
+  box-shadow: inset 0 0 5px #ff9999;
+}
+
+/* === Black Keys === */
+.clavonika-container .black-key {
+  position: absolute;
+  width: 16px;
+  height: 90px;
+  cursor: pointer;
+  z-index: 2;
+  border-radius: 0 0 3px 3px;
+  background: linear-gradient(180deg, #2a2a2a, #1a1a1a 50%, #000);
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.8);
+  transition: transform 0.1s ease;
+}
+
+.clavonika-container .black-key:hover {
+  background: linear-gradient(180deg, #404040, #2a2a2a 50%, #1a1a1a);
+  transform: translateY(1px);
+}
+
+.clavonika-container .black-key:active {
+  background: linear-gradient(180deg, #1a1a1a, #0a0a0a 50%, #000);
+  transform: translateY(2px);
+}
+
+.clavonika-container .black-key.active {
+  background-color: #aa0000 !important;
+  box-shadow: inset 0 0 5px #ff3333;
+}
+
+/* === Key Labels === */
+.clavonika-container .key-label {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  font-weight: 500;
+  color: #888;
+  pointer-events: none;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+.clavonika-container .black-key .key-label {
+  bottom: 6px;
+  font-size: 7px;
+  color: #bbb;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+}
+
+/* === Middle C & C-Octaves Highlighting === */
+.clavonika-container .white-key.middle-c .key-label,
+.clavonika-container .black-key.middle-c .key-label,
+.clavonika-container .white-key[data-note^="C"] .key-label {
+  color: #ff6b6b;
+  font-weight: bold;
+}
+
+/* === Label Visibility States === */
+.clavonika-container .keyboard.hide-all-labels .key-label {
+  display: none;
+}
+
+.clavonika-container .keyboard.show-c-only .key-label {
+  display: none;
+}
+
+.clavonika-container .keyboard.show-c-only .white-key[data-note^="C"] .key-label,
+.clavonika-container .keyboard.show-c-only .black-key[data-note^="C"] .key-label {
+  display: block;
+}
+
+/* === Hover Glow Effect (Subtle) === */
+.clavonika-container .white-key:hover::before,
+.clavonika-container .black-key:hover::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  z-index: -1;
+}
+
+.clavonika-container .white-key:hover::before {
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  border-radius: 0 0 6px 6px;
+}
+
+.clavonika-container .black-key:hover::before {
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+  border-radius: 0 0 5px 5px;
+}
+
+/* === Press Animation === */
+@keyframes clavonika-keyPress {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(2px); }
+  100% { transform: translateY(0); }
+}
+
+.clavonika-container .key-pressed {
+  animation: clavonika-keyPress 0.2s ease;
 }
 `;
 
@@ -486,8 +460,7 @@
                 const el = container.querySelector(`[data-midi="${midiNote}"]`);
                 if (el) el.classList.remove("active");
             },
-            initialize: initialize,
-            getContainer: function() { return container; }
+            initialize: initialize
         };
     }
 
@@ -534,26 +507,6 @@
             instance.initialize();
 
             return instance;
-        },
-
-        // Utility method to create a container and initialize
-        create: function(parentElement) {
-            const container = document.createElement('div');
-            container.id = 'clavonika-' + Date.now();
-
-            if (typeof parentElement === 'string') {
-                const parent = document.getElementById(parentElement);
-                if (!parent) {
-                    throw new Error(`Parent element with id '${parentElement}' not found`);
-                }
-                parent.appendChild(container);
-            } else if (parentElement && parentElement.nodeType === 1) {
-                parentElement.appendChild(container);
-            } else {
-                document.body.appendChild(container);
-            }
-
-            return this.init(container);
         }
     };
 
