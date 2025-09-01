@@ -126,12 +126,6 @@
   transform: translateY(1px);
 }
 
-.clavonika-container .white-key:active,
-.clavonika-container .white-key.active {
-  background-color: #e06666 !important;
-  box-shadow: inset 0 0 5px #ff9999;
-}
-
 /* === Black Keys === */
 .clavonika-container .black-key {
   position: absolute;
@@ -155,12 +149,6 @@
 
 .clavonika-container .black-key:active {
   background: linear-gradient(180deg, #1a1a1a, #0a0a0a 50%, #000);
-  transform: translateY(2px);
-}
-
-.clavonika-container .black-key.active {
-  background-color: #aa0000 !important;
-  box-shadow: inset 0 0 5px #ff3333;
 }
 
 /* === Key Labels === */
@@ -200,8 +188,14 @@
   display: none;
 }
 
-.clavonika-container .keyboard.show-c-only .white-key[data-note^="C"] .key-label,
-.clavonika-container .keyboard.show-c-only .black-key[data-note^="C"] .key-label {
+.clavonika-container
+  .keyboard.show-c-only
+  .white-key[data-note^="C"]
+  .key-label,
+.clavonika-container
+  .keyboard.show-c-only
+  .black-key[data-note^="C"]
+  .key-label {
   display: block;
 }
 
@@ -218,20 +212,36 @@
 }
 
 .clavonika-container .white-key:hover::before {
-  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
   border-radius: 0 0 6px 6px;
 }
 
 .clavonika-container .black-key:hover::before {
-  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.05),
+    transparent
+  );
   border-radius: 0 0 5px 5px;
 }
 
 /* === Press Animation === */
 @keyframes clavonika-keyPress {
-  0%   { transform: translateY(0); }
-  50%  { transform: translateY(2px); }
-  100% { transform: translateY(0); }
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 
 .clavonika-container .key-pressed {
@@ -241,15 +251,15 @@
 /* ===== Active (pressed / MIDI-on) look: BLUE, no shadow ===== */
 .clavonika-container .white-key:active,
 .clavonika-container .white-key.active {
-  background: #2b8cff !important;   /* solid blue */
-  box-shadow: none !important;       /* no inner/outer shadow */
-  border-color: #2b8cff;             /* optional: match border */
+  background: #2b8cff !important; /* solid blue */
+  box-shadow: none !important; /* no inner/outer shadow */
+  border-color: #2b8cff; /* optional: match border */
 }
 
 .clavonika-container .black-key:active,
 .clavonika-container .black-key.active {
-  background: #2b8cff !important;   /* solid blue */
-  box-shadow: none !important;       /* no inner/outer shadow */
+  background: #2b8cff !important; /* solid blue */
+  box-shadow: none !important; /* no inner/outer shadow */
 }
 
 /* Optional: make the label readable on blue */
@@ -266,6 +276,7 @@
 .clavonika-container .black-key:active {
   transform: none !important;
 }
+
 `;
 
     // HTML Template
