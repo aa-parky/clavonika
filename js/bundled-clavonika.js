@@ -237,6 +237,35 @@
 .clavonika-container .key-pressed {
   animation: clavonika-keyPress 0.2s ease;
 }
+
+/* ===== Active (pressed / MIDI-on) look: BLUE, no shadow ===== */
+.clavonika-container .white-key:active,
+.clavonika-container .white-key.active {
+  background: #2b8cff !important;   /* solid blue */
+  box-shadow: none !important;       /* no inner/outer shadow */
+  border-color: #2b8cff;             /* optional: match border */
+}
+
+.clavonika-container .black-key:active,
+.clavonika-container .black-key.active {
+  background: #2b8cff !important;   /* solid blue */
+  box-shadow: none !important;       /* no inner/outer shadow */
+}
+
+/* Optional: make the label readable on blue */
+.clavonika-container .white-key.active .key-label,
+.clavonika-container .white-key:active .key-label,
+.clavonika-container .black-key.active .key-label,
+.clavonika-container .black-key:active .key-label {
+  color: #eaf2ff;
+  text-shadow: none;
+}
+
+/* Optional: if you don't want keys to dip while active */
+.clavonika-container .white-key:active,
+.clavonika-container .black-key:active {
+  transform: none !important;
+}
 `;
 
     // HTML Template
