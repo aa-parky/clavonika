@@ -6,8 +6,10 @@
  *   <script src="bundled-clavonika.js"></script>
  *   <script>
  *     const piano = Clavonika.init('container-id');
- *     piano.noteOn(60);  // Play middle C
- *     piano.noteOff(60); // Stop middle C
+ *     // Live MIDI will highlight keys automatically.
+ *     // You can also call:
+ *     // piano.noteOn(60);  // Play middle C
+ *     // piano.noteOff(60); // Stop middle C
  *   </script>
  */
 
@@ -233,15 +235,9 @@
 
 /* === Press Animation === */
 @keyframes clavonika-keyPress {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(2px);
-  }
-  100% {
-    transform: translateY(0);
-  }
+  0% { transform: translateY(0); }
+  50% { transform: translateY(2px); }
+  100% { transform: translateY(0); }
 }
 
 .clavonika-container .key-pressed {
@@ -251,15 +247,15 @@
 /* ===== Active (pressed / MIDI-on) look: BLUE, no shadow ===== */
 .clavonika-container .white-key:active,
 .clavonika-container .white-key.active {
-  background: #2b8cff !important; /* solid blue */
-  box-shadow: none !important; /* no inner/outer shadow */
-  border-color: #2b8cff; /* optional: match border */
+  background: #2b8cff !important;
+  box-shadow: none !important;
+  border-color: #2b8cff;
 }
 
 .clavonika-container .black-key:active,
 .clavonika-container .black-key.active {
-  background: #2b8cff !important; /* solid blue */
-  box-shadow: none !important; /* no inner/outer shadow */
+  background: #2b8cff !important;
+  box-shadow: none !important;
 }
 
 /* Optional: make the label readable on blue */
@@ -276,40 +272,37 @@
 .clavonika-container .black-key:active {
   transform: none !important;
 }
-
 `;
 
     // HTML Template
     const HTML_TEMPLATE = `
 <section class="piano-wrapper">
-    <div class="midi-device-label">
-        <label for="midiDeviceSelector">Select MIDI Input:</label>
-        <select id="midiDeviceSelector"></select>
-    </div>
-    <div class="piano-controls">
-        <label>
-            <input type="checkbox" id="toggleCOnly" />
-            Show only C notes
-        </label>
-        <label>
-            <input type="checkbox" id="toggleAllLabels" />
-            Hide all note labels
-        </label>
-        <label class="middle-c-label">
-            <span>Middle C Label:</span>
-            <select id="middleC">
-                <option value="C3" selected>
-                    C3 (Kawai VPC1, Yamaha, Logic)
-                </option>
-                <option value="C4">C4 (Midonika, General MIDI)</option>
-                <option value="C5">C5 (Notation, FL Studio)</option>
-            </select>
-        </label>
-    </div>
+  <div class="midi-device-label">
+    <label for="midiDeviceSelector">Select MIDI Input:</label>
+    <select id="midiDeviceSelector"></select>
+  </div>
+  <div class="piano-controls">
+    <label>
+      <input type="checkbox" id="toggleCOnly" />
+      Show only C notes
+    </label>
+    <label>
+      <input type="checkbox" id="toggleAllLabels" />
+      Hide all note labels
+    </label>
+    <label class="middle-c-label">
+      <span>Middle C Label:</span>
+      <select id="middleC">
+        <option value="C3" selected>C3 (Kawai VPC1, Yamaha, Logic)</option>
+        <option value="C4">C4 (Midonika, General MIDI)</option>
+        <option value="C5">C5 (Notation, FL Studio)</option>
+      </select>
+    </label>
+  </div>
 
-    <div class="piano-container">
-        <div class="keyboard" id="keyboard"></div>
-    </div>
+  <div class="piano-container">
+    <div class="keyboard" id="keyboard"></div>
+  </div>
 </section>
 `;
 
@@ -334,7 +327,12 @@
     // Core functionality
     function createClavonikaInstance(container) {
         let middleCShift = -1; // MIDI 60 = C3
-        let keyboard, toggleCOnly, toggleAllLabels, middleCSelect;
+        let keyboard, toggleCOnly, toggleAllLabels, middleCSelect, midiDeviceSelector;
+
+        // === MIDI state ===
+        let midiAccess = null;
+        let currentInput = null;
+        const LAST_INPUT_KEY = 'clavonika:lastInputId';
 
         function createKeyElement(key) {
             const el = document.createElement("div");
@@ -417,21 +415,129 @@
             setLabelMode(toggleCOnly.checked ? 'c-only' : (toggleAllLabels.checked ? 'hide-all' : 'normal'));
         }
 
+        function setNoteActive(midiNote, isActive) {
+            const el = container.querySelector(`[data-midi="${midiNote}"]`);
+            if (el) el.classList.toggle("active", isActive);
+        }
+
+        // ===== Web MIDI integration =====
+        function handleMIDIMessage(ev) {
+            const [status, note, velocity = 0] = ev.data || [];
+            const type = status & 0xf0;
+
+            // Note Off (0x80) or Note On with velocity 0 (running note-off)
+            if (type === 0x80 || (type === 0x90 && velocity === 0)) {
+                setNoteActive(note, false);
+                return;
+            }
+            // Note On
+            if (type === 0x90 && velocity > 0) {
+                setNoteActive(note, true);
+                return;
+            }
+        }
+
+        function detachCurrentInput() {
+            if (currentInput) {
+                try { currentInput.onmidimessage = null; } catch (_) {}
+            }
+            currentInput = null;
+        }
+
+        function attachInputById(id) {
+            if (!midiAccess) return;
+            let found = null;
+            for (const input of midiAccess.inputs.values()) {
+                if (input.id === id) { found = input; break; }
+            }
+            if (!found) return;
+
+            detachCurrentInput();
+            currentInput = found;
+            currentInput.onmidimessage = handleMIDIMessage;
+            localStorage.setItem(LAST_INPUT_KEY, currentInput.id);
+        }
+
+        function populateDeviceSelector() {
+            // Clear
+            midiDeviceSelector.innerHTML = '';
+
+            const inputs = Array.from(midiAccess.inputs.values());
+            if (inputs.length === 0) {
+                const opt = document.createElement('option');
+                opt.textContent = 'No MIDI inputs';
+                opt.disabled = true;
+                opt.selected = true;
+                midiDeviceSelector.appendChild(opt);
+                return;
+            }
+
+            inputs.forEach(inp => {
+                const opt = document.createElement('option');
+                opt.value = inp.id;
+                opt.textContent = inp.name || inp.manufacturer || `Input ${inp.id}`;
+                midiDeviceSelector.appendChild(opt);
+            });
+
+            // Prefer last used if present; else first input
+            const saved = localStorage.getItem(LAST_INPUT_KEY);
+            const candidate = inputs.find(i => i.id === saved) ? saved : inputs[0].id;
+
+            midiDeviceSelector.value = candidate;
+            // CRITICAL: bind immediately so keys respond without flipping inputs
+            attachInputById(candidate);
+        }
+
+        function initMIDI() {
+            if (!navigator.requestMIDIAccess) {
+                // Hide selector if not supported
+                midiDeviceSelector.innerHTML = '';
+                midiDeviceSelector.disabled = true;
+                midiDeviceSelector.classList.add('hidden');
+                return;
+            }
+
+            navigator.requestMIDIAccess({ sysex: false }).then(access => {
+                midiAccess = access;
+                populateDeviceSelector();
+
+                // React to hot-plug
+                midiAccess.onstatechange = () => {
+                    const prev = midiDeviceSelector.value;
+                    populateDeviceSelector();
+                    // If previous id still exists, ensure we stay on it
+                    if (prev && Array.from(midiAccess.inputs.values()).some(i => i.id === prev)) {
+                        midiDeviceSelector.value = prev;
+                        attachInputById(prev);
+                    }
+                };
+
+                midiDeviceSelector.addEventListener('change', (e) => {
+                    const id = e.target.value;
+                    attachInputById(id);
+                });
+            }).catch(() => {
+                // On failure, disable selector
+                midiDeviceSelector.disabled = true;
+                midiDeviceSelector.title = 'Web MIDI access denied/unavailable';
+            });
+        }
+        // ===== end Web MIDI integration =====
+
         function initialize() {
             // Get elements
             keyboard = container.querySelector("#keyboard");
             toggleCOnly = container.querySelector("#toggleCOnly");
             toggleAllLabels = container.querySelector("#toggleAllLabels");
             middleCSelect = container.querySelector("#middleC");
+            midiDeviceSelector = container.querySelector("#midiDeviceSelector");
 
             // Generate keyboard and set up event handlers
             generateKeyboard();
             initializeEventHandlers();
-        }
 
-        function setNoteActive(midiNote, isActive) {
-            const el = container.querySelector(`[data-midi="${midiNote}"]`);
-            if (el) el.classList.toggle("active", isActive);
+            // Initialize Web MIDI (auto-binds to last used input if present)
+            initMIDI();
         }
 
         // Public API
@@ -449,9 +555,7 @@
     // Inject CSS styles
     function injectStyles() {
         const styleId = 'clavonika-styles';
-        if (document.getElementById(styleId)) {
-            return; // Already injected
-        }
+        if (document.getElementById(styleId)) return;
 
         const style = document.createElement('style');
         style.id = styleId;
@@ -462,10 +566,8 @@
     // Main Clavonika object
     window.Clavonika = {
         init: function(containerId) {
-            // Inject CSS if not already done
             injectStyles();
 
-            // Get or create a container
             let container;
             if (typeof containerId === 'string') {
                 container = document.getElementById(containerId);
@@ -478,13 +580,9 @@
                 throw new Error('Invalid container: must be an element ID string or DOM element');
             }
 
-            // Add clavonika container class
             container.classList.add('clavonika-container');
-
-            // Insert HTML
             container.innerHTML = HTML_TEMPLATE;
 
-            // Create and initialize an instance
             const instance = createClavonikaInstance(container);
             instance.initialize();
 
@@ -503,4 +601,3 @@
     };
 
 })();
-
