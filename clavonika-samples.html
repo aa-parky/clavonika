@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Clavonika with Samples</title>
+    <link rel="stylesheet" href="css/clavonika.css">
+    <style>
+        body {
+            background: #111;
+            color: #eee;
+            font-family: sans-serif;
+            padding: 1rem;
+        }
+        .ui-block {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🎹 Clavonika (Sample Enhanced)</h1>
+
+<div class="ui-block">
+    <label><input type="checkbox" id="enable-samples"> Enable Tonika Samples</label>
+    <select id="sample-selector"></select>
+</div>
+
+<div id="piano-container"></div>
+
+<!-- 🔊 Add soundonika.js as global script (NOT module) -->
+<script src="js/soundonika.js"></script>
+
+<!-- ✅ Load clavonika.js as an ES module -->
+<script type="module">
+    import Clavonika from './js/clavonika.js';
+    import initSampleWrapper from './js/clavonika-samples.js';
+
+    console.log('Initializing Clavonika (Sample Enhanced)...');
+    const piano = Clavonika.init('piano-container');
+
+    initSampleWrapper({
+        Clavonika,
+        Soundonika: window.Soundonika,
+        pianoInstance: piano
+    });
+</script>
+
+</body>
+</html>
