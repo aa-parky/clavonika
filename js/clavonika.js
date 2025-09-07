@@ -17,6 +17,84 @@
 (function () {
     "use strict";
 
+    // ===== CONSTANTS =====
+
+    // MIDI-related constants
+    const MIDI_CONSTANTS = Object.freeze({
+        PIANO_RANGE: {
+            LOWEST_NOTE: 21,    // A0 - lowest key on an 88-key piano
+            HIGHEST_NOTE: 108   // C8 - highest key on 88-key piano
+        },
+        MIDDLE_C: 60,           // MIDI note the number for middle C
+        MESSAGE_TYPES: {
+            NOTE_OFF: 0x80,
+            NOTE_ON: 0x90,
+            STATUS_MASK: 0xf0
+        }
+    });
+
+    // Music theory constants
+    const MUSIC_CONSTANTS = Object.freeze({
+        SEMITONES_PER_OCTAVE: 12,
+        NOTE_NAMES: ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"],
+        OCTAVE_ADJUSTMENTS: {
+            C3_MODE: -1,  // Kawai VPC1, Yamaha, Logic
+            C4_MODE: 0,   // Midonika, General MIDI
+            C5_MODE: 1    // Notation, FL Studio
+        },
+        BASE_OCTAVE_OFFSET: -1  // MIDI octave calculation offset
+    });
+
+    // Layout and positioning constants
+    const LAYOUT_CONSTANTS = Object.freeze({
+        WHITE_KEY: {
+            WIDTH: 24,      // pixels
+            HEIGHT: 140,    // pixels
+            SPACING: 25     // pixels between white keys
+        },
+        BLACK_KEY: {
+            WIDTH: 16,      // pixels
+            HEIGHT: 90,     // pixels
+            OFFSET: 6       // pixels offset for positioning
+        }
+    });
+
+    // UI element constants
+    const UI_CONSTANTS = Object.freeze({
+        CSS_CLASSES: {
+            SHOW_C_ONLY: "show-c-only",
+            HIDE_ALL_LABELS: "hide-all-labels",
+            MIDDLE_C: "middle-c",
+            WHITE_KEY: "white-key",
+            BLACK_KEY: "black-key",
+            ACTIVE: "active",
+            KEY_LABEL: "key-label"
+        },
+        ELEMENT_IDS: {
+            TOGGLE_C_ONLY: "#toggleCOnly",
+            TOGGLE_ALL_LABELS: "#toggleAllLabels",
+            MIDDLE_C_SELECT: "#middleC",
+            MIDI_DEVICE_SELECTOR: "#midiDeviceSelector",
+            KEYBOARD: "#keyboard"
+        },
+        LABEL_MODES: {
+            C_ONLY: "c-only",
+            HIDE_ALL: "hide-all",
+            NORMAL: "normal"
+        }
+    });
+
+    // Configuration constants
+    const CONFIG_CONSTANTS = Object.freeze({
+        STORAGE_KEYS: {
+            LAST_MIDI_INPUT: "clavonika:lastInputId"
+        },
+        DEFAULT_VALUES: {
+            MIDDLE_C_MODE: "C3",
+            OCTAVE_SHIFT: MUSIC_CONSTANTS.OCTAVE_ADJUSTMENTS.C3_MODE
+        }
+    });
+
     // HTML Template
     const HTML_TEMPLATE = `
 <section class="piano-wrapper">
@@ -49,29 +127,21 @@
 </section>
 `;
 
-    // Piano keys data
+    // ===== CORE FUNCTIONALITY =====
+
+    // Piano keys data generation
     function generateKeys() {
-        const NAMES = [
-            "C",
-            "C#",
-            "D",
-            "D#",
-            "E",
-            "F",
-            "F#",
-            "G",
-            "G#",
-            "A",
-            "A#",
-            "B",
-        ];
         const out = [];
-        for (let midi = 21; midi <= 108; midi++) {
-            const name = NAMES[midi % 12];
-            const octave = Math.floor(midi / 12) - 1;
+        for (let midi = MIDI_CONSTANTS.PIANO_RANGE.LOWEST_NOTE;
+             midi <= MIDI_CONSTANTS.PIANO_RANGE.HIGHEST_NOTE;
+             midi++) {
+            const name = MUSIC_CONSTANTS.NOTE_NAMES[midi % MUSIC_CONSTANTS.SEMITONES_PER_OCTAVE];
+            const octave = Math.floor(midi / MUSIC_CONSTANTS.SEMITONES_PER_OCTAVE) +
+                MUSIC_CONSTANTS.BASE_OCTAVE_OFFSET;
             out.push({
                 note: name + octave,
-                type: name.includes("#") ? "black" : "white",
+                type: name.includes("#") ? UI_CONSTANTS.CSS_CLASSES.BLACK_KEY.replace("-key", "") :
+                    UI_CONSTANTS.CSS_CLASSES.WHITE_KEY.replace("-key", ""),
                 octave,
                 midi,
             });
@@ -82,31 +152,27 @@
 
     // Core functionality
     function createClavonikaInstance(container) {
-        let middleCShift = -1; // MIDI 60 = C3
-        let keyboard,
-            toggleCOnly,
-            toggleAllLabels,
-            middleCSelect,
-            midiDeviceSelector;
+        let middleCShift = CONFIG_CONSTANTS.DEFAULT_VALUES.OCTAVE_SHIFT;
+        let keyboard, toggleCOnly, toggleAllLabels, middleCSelect, midiDeviceSelector;
 
         // === MIDI state ===
         let midiAccess = null;
         let currentInput = null;
-        const LAST_INPUT_KEY = "clavonika:lastInputId";
 
         function createKeyElement(key) {
             const el = document.createElement("div");
-            el.className = key.type === "black" ? "black-key" : "white-key";
+            el.className = key.type === "black" ? UI_CONSTANTS.CSS_CLASSES.BLACK_KEY :
+                UI_CONSTANTS.CSS_CLASSES.WHITE_KEY;
             el.dataset.note = key.note;
             el.dataset.octave = String(key.octave);
             el.dataset.midi = String(key.midi);
 
-            if (key.midi === 60) {
-                el.classList.add("middle-c");
+            if (key.midi === MIDI_CONSTANTS.MIDDLE_C) {
+                el.classList.add(UI_CONSTANTS.CSS_CLASSES.MIDDLE_C);
             }
 
             const label = document.createElement("span");
-            label.className = "key-label";
+            label.className = UI_CONSTANTS.CSS_CLASSES.KEY_LABEL;
             label.textContent = key.note.replace(
                 /\d+$/,
                 String(key.octave + middleCShift),
@@ -125,7 +191,8 @@
                     const whiteKeysBefore = keysBefore.filter(
                         (k) => k.type === "white",
                     ).length;
-                    keyElement.style.left = whiteKeysBefore * 25 - -6 + "px";
+                    keyElement.style.left = whiteKeysBefore * LAYOUT_CONSTANTS.WHITE_KEY.SPACING +
+                        LAYOUT_CONSTANTS.BLACK_KEY.OFFSET + "px";
                 }
 
                 keyboard.appendChild(keyElement);
@@ -143,34 +210,39 @@
         }
 
         function setLabelMode(mode) {
-            if (mode === "c-only") {
-                keyboard.classList.add("show-c-only");
-                keyboard.classList.remove("hide-all-labels");
+            if (mode === UI_CONSTANTS.LABEL_MODES.C_ONLY) {
+                keyboard.classList.add(UI_CONSTANTS.CSS_CLASSES.SHOW_C_ONLY);
+                keyboard.classList.remove(UI_CONSTANTS.CSS_CLASSES.HIDE_ALL_LABELS);
                 toggleCOnly.checked = true;
                 toggleAllLabels.checked = false;
-            } else if (mode === "hide-all") {
-                keyboard.classList.add("hide-all-labels");
-                keyboard.classList.remove("show-c-only");
+            } else if (mode === UI_CONSTANTS.LABEL_MODES.HIDE_ALL) {
+                keyboard.classList.add(UI_CONSTANTS.CSS_CLASSES.HIDE_ALL_LABELS);
+                keyboard.classList.remove(UI_CONSTANTS.CSS_CLASSES.SHOW_C_ONLY);
                 toggleCOnly.checked = false;
                 toggleAllLabels.checked = true;
             } else {
-                keyboard.classList.remove("show-c-only");
-                keyboard.classList.remove("hide-all-labels");
+                keyboard.classList.remove(UI_CONSTANTS.CSS_CLASSES.SHOW_C_ONLY);
+                keyboard.classList.remove(UI_CONSTANTS.CSS_CLASSES.HIDE_ALL_LABELS);
                 toggleCOnly.checked = false;
                 toggleAllLabels.checked = false;
             }
         }
 
         function getCurrentLabelMode() {
-            if (toggleCOnly.checked) return "c-only";
-            if (toggleAllLabels.checked) return "hide-all";
-            return "normal";
+            if (toggleCOnly.checked) return UI_CONSTANTS.LABEL_MODES.C_ONLY;
+            if (toggleAllLabels.checked) return UI_CONSTANTS.LABEL_MODES.HIDE_ALL;
+            return UI_CONSTANTS.LABEL_MODES.NORMAL;
         }
 
         function initializeEventHandlers() {
             middleCSelect.addEventListener("change", (e) => {
                 const mode = e.target.value;
-                middleCShift = mode === "C3" ? -1 : mode === "C4" ? 0 : 1;
+                const octaveShifts = {
+                    "C3": MUSIC_CONSTANTS.OCTAVE_ADJUSTMENTS.C3_MODE,
+                    "C4": MUSIC_CONSTANTS.OCTAVE_ADJUSTMENTS.C4_MODE,
+                    "C5": MUSIC_CONSTANTS.OCTAVE_ADJUSTMENTS.C5_MODE
+                };
+                middleCShift = octaveShifts[mode];
                 generateKeyboard();
             });
 
@@ -188,23 +260,23 @@
 
         function setNoteActive(midiNote, isActive) {
             const el = container.querySelector(`[data-midi="${midiNote}"]`);
-            if (el) el.classList.toggle("active", isActive);
+            if (el) el.classList.toggle(UI_CONSTANTS.CSS_CLASSES.ACTIVE, isActive);
         }
 
         // ===== Web MIDI integration =====
         function handleMIDIMessage(ev) {
             const [status, note, velocity = 0] = ev.data || [];
-            const type = status & 0xf0;
+            const type = status & MIDI_CONSTANTS.MESSAGE_TYPES.STATUS_MASK;
 
-            // Note Off (0x80) or Note On with velocity 0 (running note-off)
-            if (type === 0x80 || (type === 0x90 && velocity === 0)) {
+            // Note Off or Note On with velocity 0 (running note-off)
+            if (type === MIDI_CONSTANTS.MESSAGE_TYPES.NOTE_OFF ||
+                (type === MIDI_CONSTANTS.MESSAGE_TYPES.NOTE_ON && velocity === 0)) {
                 setNoteActive(note, false);
                 return;
             }
             // Note On
-            if (type === 0x90 && velocity > 0) {
+            if (type === MIDI_CONSTANTS.MESSAGE_TYPES.NOTE_ON && velocity > 0) {
                 setNoteActive(note, true);
-
             }
         }
 
@@ -231,7 +303,7 @@
             detachCurrentInput();
             currentInput = found;
             currentInput.onmidimessage = handleMIDIMessage;
-            localStorage.setItem(LAST_INPUT_KEY, currentInput.id);
+            localStorage.setItem(CONFIG_CONSTANTS.STORAGE_KEYS.LAST_MIDI_INPUT, currentInput.id);
         }
 
         function createDeviceOption(input) {
@@ -257,7 +329,7 @@
         function getPreferredInputId(inputs) {
             if (inputs.length === 0) return null;
 
-            const saved = localStorage.getItem(LAST_INPUT_KEY);
+            const saved = localStorage.getItem(CONFIG_CONSTANTS.STORAGE_KEYS.LAST_MIDI_INPUT);
             return inputs.find(i => i.id === saved) ? saved : inputs[0].id;
         }
 
@@ -296,7 +368,7 @@
 
         function initMIDI() {
             if (!navigator.requestMIDIAccess) {
-                // Hide selector if is not supported
+                // Hide selector if Web MIDI is not supported
                 midiDeviceSelector.innerHTML = "";
                 midiDeviceSelector.disabled = true;
                 midiDeviceSelector.classList.add("hidden");
@@ -328,12 +400,12 @@
         // ===== end Web MIDI integration =====
 
         function initialize() {
-            // Get elements
-            keyboard = container.querySelector("#keyboard");
-            toggleCOnly = container.querySelector("#toggleCOnly");
-            toggleAllLabels = container.querySelector("#toggleAllLabels");
-            middleCSelect = container.querySelector("#middleC");
-            midiDeviceSelector = container.querySelector("#midiDeviceSelector");
+            // Get elements using constants
+            keyboard = container.querySelector(UI_CONSTANTS.ELEMENT_IDS.KEYBOARD);
+            toggleCOnly = container.querySelector(UI_CONSTANTS.ELEMENT_IDS.TOGGLE_C_ONLY);
+            toggleAllLabels = container.querySelector(UI_CONSTANTS.ELEMENT_IDS.TOGGLE_ALL_LABELS);
+            middleCSelect = container.querySelector(UI_CONSTANTS.ELEMENT_IDS.MIDDLE_C_SELECT);
+            midiDeviceSelector = container.querySelector(UI_CONSTANTS.ELEMENT_IDS.MIDI_DEVICE_SELECTOR);
 
             // Generate keyboard and set up event handlers
             generateKeyboard();
@@ -396,3 +468,4 @@
         },
     };
 })();
+
