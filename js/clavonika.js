@@ -14,7 +14,6 @@
  *   </script>
  */
 
-(function () {
     "use strict";
 
     // ===== CONSTANTS =====
@@ -428,7 +427,7 @@
     }
 
     // Main Clavonika object
-    window.Clavonika = {
+    const Clavonika = {
         init: function (containerId) {
             let container;
             if (typeof containerId === "string") {
@@ -454,18 +453,5 @@
         },
     };
 
-    // Backward compatibility - expose PianoInterface globally
-    window.PianoInterface = {
-        noteOn: function (_midiNote) {
-            console.warn(
-                "PianoInterface is deprecated. Use Clavonika.init() to create an instance.",
-            );
-        },
-        noteOff: function (_midiNote) {
-            console.warn(
-                "PianoInterface is deprecated. Use Clavonika.init() to create an instance.",
-            );
-        },
-    };
-})();
+    export default Clavonika;
 
