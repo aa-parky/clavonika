@@ -170,14 +170,9 @@
     display: none;
 }
 
-.clavonika-container,
-.keyboard.show-c-only,
-.white-key[data-note^="C"],
-.key-label,
-.clavonika-container,
-.keyboard.show-c-only,
-.black-key[data-note^="C"],
-.key-label {
+/* Show only C note labels when show-c-only is active */
+.clavonika-container .keyboard.show-c-only .white-key[data-note^="C"] .key-label,
+.clavonika-container .keyboard.show-c-only .black-key[data-note^="C"] .key-label {
     display: block;
 }
 
